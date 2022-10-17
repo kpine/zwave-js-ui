@@ -17,7 +17,7 @@ ask() {
 		fi
 
 		# Ask the question
-		read -p "$1 [$prompt] " REPLY
+		read -r -p "$1 [$prompt] " REPLY
 
 		# Default?
 		if [ -z "$REPLY" ]; then
@@ -42,18 +42,18 @@ echo "App-name: $APP"
 VERSION=$(node -p "require('./package.json').version")
 echo "Version: $VERSION"
 
-NODE_MAJOR=$(node -v | egrep -o '[0-9].' | head -n 1)
+NODE_MAJOR=$(node -v | grep -E -o '[0-9].' | head -n 1)
 
 echo "## Clear $PKG_FOLDER folder"
-rm -rf $PKG_FOLDER/*
+rm -rf ${PKG_FOLDER:?PKG_FOLDER not defined}/*
 
-if [ ! -z "$1" ]; then
+if [ -n "$1" ]; then
 	echo "## Building application..."
 	echo ''
 	yarn run build
 
 	echo "Executing command: pkg package.json -t node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64 --out-path $PKG_FOLDER"
-	pkg package.json -t node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64  --out-path $PKG_FOLDER
+	pkg package.json -t "node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64"  --out-path $PKG_FOLDER
 else
 
 	if ask "Re-build $APP?"; then
@@ -65,7 +65,7 @@ else
 	echo '## Choose architecture to build'
 	echo '###################################################'
 	echo ' '
-	echo 'Your architecture is' $(arch)
+	echo 'Your architecture is' "$(arch)"
 	PS3="Architecture: >"
 	options=(
 		"x64"
@@ -76,36 +76,36 @@ else
 		"arm64"
 	)
 	echo ''
-	select option in "${options[@]}"; do
+	select _ in "${options[@]}"; do
 		case "$REPLY" in
 			1)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t node$NODE_MAJOR-linux-x64 --out-path $PKG_FOLDER
+				pkg package.json -t "node$NODE_MAJOR-linux-x64" --out-path $PKG_FOLDER
 				break
 				;;
 			2)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t node$NODE_MAJOR-linux-armv7 --out-path $PKG_FOLDER --public-packages=*
+				pkg package.json -t "node$NODE_MAJOR-linux-armv7" --out-path $PKG_FOLDER --public-packages=*
 				break
 				;;
 			3)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t node$NODE_MAJOR-linux-armv6 --out-path $PKG_FOLDER --public-packages=*
+				pkg package.json -t "node$NODE_MAJOR-linux-armv6" --out-path $PKG_FOLDER --public-packages=*
 				break
 				;;
 			4)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t node$NODE_MAJOR-linux-x86 --out-path $PKG_FOLDER
+				pkg package.json -t "node$NODE_MAJOR-linux-x86" --out-path $PKG_FOLDER
 				break
 				;;
 			5)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t node$NODE_MAJOR-alpine-x64 --out-path $PKG_FOLDER
+				pkg package.json -t "node$NODE_MAJOR-alpine-x64" --out-path $PKG_FOLDER
 				break
 				;;
 			6)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t node$NODE_MAJOR-linux-arm64 --out-path $PKG_FOLDER --public-packages=*
+				pkg package.json -t "node$NODE_MAJOR-linux-arm64" --out-path $PKG_FOLDER --public-packages=*
 				break
 				;;
 			*)
@@ -121,13 +121,13 @@ echo "## Create folders needed"
 cd $PKG_FOLDER
 mkdir store -p
 
-if [ ! -z "$1" ]; then
+if [ -n "$1" ]; then
 	echo "## Create zip file $APP-v$VERSION-win"
-	zip -r $APP-v$VERSION-win.zip store $APP-win.exe
+	zip -r "$APP-v$VERSION-win.zip" store "$APP-win.exe"
 
 	echo "## Create zip file $APP-v$VERSION-linux"
-	zip -r $APP-v$VERSION-linux.zip store $APP-linux
+	zip -r "$APP-v$VERSION-linux.zip" store "$APP-linux"
 else
 	echo "## Create zip file $APP-v$VERSION"
-	zip -r $APP-v$VERSION.zip store $APP
+	zip -r "$APP-v$VERSION.zip" store "$APP"
 fi
