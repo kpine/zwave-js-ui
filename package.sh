@@ -53,7 +53,7 @@ if [ -n "$1" ]; then
 	yarn run build
 
 	echo "Executing command: pkg package.json -t node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64 --out-path $PKG_FOLDER"
-	pkg package.json -t "node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64"  --out-path $PKG_FOLDER
+	npx pkg package.json -t "node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64"  --out-path $PKG_FOLDER
 else
 
 	if ask "Re-build $APP?"; then
@@ -80,32 +80,32 @@ else
 		case "$REPLY" in
 			1)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t "node$NODE_MAJOR-linux-x64" --out-path $PKG_FOLDER
+				npx pkg package.json -t "node$NODE_MAJOR-linux-x64" --out-path $PKG_FOLDER
 				break
 				;;
 			2)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t "node$NODE_MAJOR-linux-armv7" --out-path $PKG_FOLDER --public-packages=*
+				npx pkg package.json -t "node$NODE_MAJOR-linux-armv7" --out-path $PKG_FOLDER --public-packages=*
 				break
 				;;
 			3)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t "node$NODE_MAJOR-linux-armv6" --out-path $PKG_FOLDER --public-packages=*
+				npx pkg package.json -t "node$NODE_MAJOR-linux-armv6" --out-path $PKG_FOLDER --public-packages=*
 				break
 				;;
 			4)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t "node$NODE_MAJOR-linux-x86" --out-path $PKG_FOLDER
+				npx pkg package.json -t "node$NODE_MAJOR-linux-x86" --out-path $PKG_FOLDER
 				break
 				;;
 			5)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t "node$NODE_MAJOR-alpine-x64" --out-path $PKG_FOLDER
+				npx pkg package.json -t "node$NODE_MAJOR-alpine-x64" --out-path $PKG_FOLDER
 				break
 				;;
 			6)
 				echo "## Creating application package in $PKG_FOLDER folder"
-				pkg package.json -t "node$NODE_MAJOR-linux-arm64" --out-path $PKG_FOLDER --public-packages=*
+				npx pkg package.json -t "node$NODE_MAJOR-linux-arm64" --out-path $PKG_FOLDER
 				break
 				;;
 			*)
