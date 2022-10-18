@@ -35,9 +35,20 @@ jobs:
       - name: Build packages
         run: bash package.sh 1
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload windows x64 package
+				uses: actions/upload-artifact@v3
+				with:
+					name: win-x64
+					path: pkg/*-win-x64.tgz
+
+      - name: Upload linux amd64 package
+        uses: actions/upload-artifact@v3
         with:
-          path: |
-            pkg/*.zip
-            pkg/*.tgz
-          if-no-files-found: error
+					name: linux-amd64
+          path: pkg/*-linux-amd64.tgz
+
+      - name: Upload linux arm64 package
+        uses: actions/upload-artifact@v3
+        with:
+					name: linux-arm64
+					path: pkg/*-linux-arm64.tgz
