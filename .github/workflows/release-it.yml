@@ -17,7 +17,7 @@ jobs:
       matrix:
         node-version: [18.10.0]
     steps:
-			- name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
       - name: Checkout master
@@ -33,11 +33,11 @@ jobs:
         run: yarn install --immutable
 
       - name: Build packages
-				run: bash package.sh 1
+        run: bash package.sh 1
 
       - uses: actions/upload-artifact@v3
         with:
-					path: |
-						pkg/*.zip
-						pkg/*.tgz
+          path: |
+            pkg/*.zip
+            pkg/*.tgz
           if-no-files-found: error
