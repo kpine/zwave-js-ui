@@ -12,18 +12,16 @@ on:
         default: 'patch'
 jobs:
   release-it:
-    if: github.actor == 'robertsLando' || github.actor == 'chrisns' || github.actor == 'AlCalzone'
     runs-on: [ubuntu-latest]
     strategy:
       matrix:
         node-version: [18.10.0]
     steps:
+			- name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
       - name: Checkout master
         uses: actions/checkout@v3
-        with:
-          ref: 'master'
-          fetch-depth: 0 # fetch all commits history to create the changelog
-          token: ${{ secrets.BOT_TOKEN }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3.4.1
@@ -34,12 +32,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Make the release
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: |
-          git config user.email "bot@zwave-js.io"
-          git config user.name "Z-Wave JS Bot"
-          git config user.password "${{secrets.BOT_TOKEN}}"
-          echo "GIT_USER=${{github.actor}}:${{secrets.BOT_TOKEN}}" >> $GITHUB_ENV
-          npx release-it ${{github.event.inputs.type}} --ci --verbose
+      - name: Build packages
+				run: bash package.sh 1
+
+      - uses: actions/upload-artifact@v3
+        with:
+					path: |
+						pkg/*.zip
+						pkg/*.tgz
+          if-no-files-found: error
