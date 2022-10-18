@@ -52,8 +52,10 @@ if [ -n "$1" ]; then
 	echo ''
 	yarn run build
 
-	echo "Executing command: pkg package.json -t node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64 --out-path $PKG_FOLDER"
-	npx pkg package.json -t "node$NODE_MAJOR-linux-x64,node$NODE_MAJOR-win-x64"  --out-path $PKG_FOLDER
+	npx pkg . --target "node$NODE_MAJOR-linux-x64" --output "$PKG_FOLDER/linux-amd64/$APP"
+	npx pkg . --target "node$NODE_MAJOR-linux-arm64" --output  "$PKG_FOLDER/linux-arm64/$APP"
+	npx pkg . --target "node$NODE_MAJOR-win-x64" --output "$PKG_FOLDER/win-x64/$APP.exe"
+
 else
 
 	if ask "Re-build $APP?"; then
@@ -117,17 +119,20 @@ else
 	done
 fi
 
-echo "## Create folders needed"
 cd $PKG_FOLDER
-mkdir store -p
 
 if [ -n "$1" ]; then
-	echo "## Create zip file $APP-v$VERSION-win"
-	zip -r "$APP-v$VERSION-win.zip" store "$APP-win.exe"
+	tar -C win-x64 -cvzf "$APP-v$VERSION-win-x64.tgz" "$APP.exe"
+	tar -C linux-amd64 -cvzf "$APP-v$VERSION-linux-amd64.tgz" "$APP"
+	tar -C linux-arm64 -cvzf "$APP-v$VERSION-linux-arm64.tgz" "$APP"
 
-	echo "## Create zip file $APP-v$VERSION-linux"
-	zip -r "$APP-v$VERSION-linux.zip" store "$APP-linux"
+	# Backwards compat zip files
+	cp "win-x64/$APP.exe" "$APP-win.exe"
+	cp "linux-amd64/$APP" "$APP-linux"
+
+	zip "$APP-v$VERSION-win.zip" "$APP-win.exe"
+	zip "$APP-v$VERSION-linux.zip" "$APP-linux"
 else
 	echo "## Create zip file $APP-v$VERSION"
-	zip -r "$APP-v$VERSION.zip" store "$APP"
+	zip -r "$APP-v$VERSION.zip" "$APP"
 fi
